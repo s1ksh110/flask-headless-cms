@@ -13,28 +13,24 @@ admin = Admin()
 migrate = Migrate()
 
 def create_app():
-    # Create Flask app instance
     app = Flask(__name__)
-    # Load configuration
     app.config.from_object(Config)
 
-    # Initialize extensions with app
+    # Init extensions
     db.init_app(app)
     login_manager.init_app(app)
     admin.init_app(app)
     migrate.init_app(app, db)
 
-    # Set up login manager
-    login_manager.login_view = 'routes.login'  # Redirect to login page if unauthorized
+    login_manager.login_view = 'routes.login'
 
-    # Import and register blueprints
+    # Register blueprints
     from .routes import bp as main_bp
+    from .api import api_bp
     app.register_blueprint(main_bp)
+    app.register_blueprint(api_bp)
 
     return app
 
-# Create app instance for interactive use
+# App instance for interactive shell
 app = create_app()
-
-# Expose these for easier importing
-__all__ = ['app', 'db', 'login_manager', 'admin']
