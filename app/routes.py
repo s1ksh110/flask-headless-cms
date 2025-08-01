@@ -109,6 +109,8 @@ def logout():
 
 # ---- File Upload ----
 
+from flask import jsonify  # import this at the top if not already
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
 
@@ -117,25 +119,28 @@ def allowed_file(filename):
 def upload():
     if request.method == 'POST':
         if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
+            return jsonify({'error': 'No file part'}), 400
+
         file = request.files['file']
         if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
+            return jsonify({'error': 'No selected file'}), 400
+
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            upload_folder = current_app.config['UPLOAD_FOLDER']
+            os.makedirs(upload_folder, exist_ok=True)
 
-            # Ensure folder exists
-            os.makedirs(current_app.config['UPLOAD_FOLDER'], exist_ok=True)
-
+            filepath = os.path.join(upload_folder, filename)
             file.save(filepath)
+
+            # Save media info in DB
             media = Media(filename=filename, filepath=filepath, user_id=current_user.id)
             db.session.add(media)
             db.session.commit()
-            flash('File uploaded successfully')
-            return redirect(url_for('admin.index'))
-        else:
-            flash('Invalid file type')
+
+            return jsonify({'message': 'File uploaded successfully'}), 200
+
+        return jsonify({'error': 'Invalid file type'}), 400
+
     return render_template('upload.html')
+

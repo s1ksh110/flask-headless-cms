@@ -12,6 +12,7 @@
 <body class="bg-gray-100 flex items-center justify-center h-screen">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 class="text-2xl font-bold mb-6 text-center">Upload Media</h2>
+
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <div class="bg-green-100 text-green-700 p-4 rounded mb-4">
@@ -19,19 +20,45 @@
                 </div>
             {% endif %}
         {% endwith %}
-        <form action="{{ url_for('routes.upload') }}" class="dropzone" id="my-dropzone"></form>
+
+        <!-- Dropzone Form -->
+        <form 
+            action="{{ url_for('routes.upload') }}"
+            class="dropzone border-2 border-dashed border-gray-300 rounded p-4 bg-white"
+            id="my-dropzone"
+            method="post"
+            enctype="multipart/form-data"
+        >
+            <div class="dz-message text-gray-500">
+                <p>Drag & drop an image here or click to upload</p>
+                <p class="text-sm">Supported formats: .png, .jpg, .jpeg, .gif (Max: 16MB)</p>
+            </div>
+        </form>
     </div>
+
     <script>
-        Dropzone.options.myDropzone = {
+        // Optional: remove this if it conflicts
+        Dropzone.autoDiscover = false;
+
+        const dropzone = new Dropzone("#my-dropzone", {
             paramName: "file",
-            maxFilesize: 16, // MB
-            acceptedFiles: 'image/*',
-            init: function() {
-                this.on("success", function(file, response) {
-                    window.location.href = "{{ url_for('admin.index') }}";
+            maxFilesize: 16,
+            acceptedFiles: "image/*",
+            init: function () {
+                this.on("success", function (file, response) {
+                    console.log("✅ Upload successful", response);
+                    // file.previewElement.classList.add("dz-success"); // optional
+                });
+
+                this.on("error", function(file, errorMessage) {
+                    console.error("❌ Upload error:", errorMessage);
                 });
             }
-        };
+        });
+
+        // Prevent dragging outside
+        window.addEventListener("dragover", e => e.preventDefault());
+        window.addEventListener("drop", e => e.preventDefault());
     </script>
 </body>
 </html>
