@@ -2,12 +2,13 @@
 import os
 from dotenv import load_dotenv
 
-load_dotenv()  # Load environment variables from .env
+load_dotenv()
 
 class Config:
-    # Secret key for session management and CSRF protection
     SECRET_KEY = os.getenv('SECRET_KEY')
-    # SQLite database URI
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
-    # Disable SQLAlchemy event system to save memory
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # Media upload settings
+    UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static/uploads')
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size

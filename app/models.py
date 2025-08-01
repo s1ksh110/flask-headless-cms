@@ -12,6 +12,7 @@ class User(UserMixin, db.Model):
     is_admin = db.Column(db.Boolean, default=False)
     posts = db.relationship('Post', backref='author', lazy=True)
     pages = db.relationship('Page', backref='author', lazy=True)
+    media = db.relationship('Media', backref='uploader', lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -41,3 +42,13 @@ class Page(db.Model):
 
     def __repr__(self):
         return f'<Page {self.title}>'
+
+class Media(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(120), nullable=False)
+    filepath = db.Column(db.String(200), nullable=False)
+    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def __repr__(self):
+        return f'<Media {self.filename}>'
