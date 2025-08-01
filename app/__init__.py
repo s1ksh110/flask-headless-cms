@@ -32,3 +32,9 @@ def create_app():
     app.register_blueprint(main_bp)
 
     return app
+
+# Create app instance for interactive use
+app = create_app()
+
+# Expose these for easier importing
+__all__ = ['app', 'db', 'login_manager', 'admin']
