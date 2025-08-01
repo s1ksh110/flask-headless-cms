@@ -1,21 +1,19 @@
-# app/routes.py
-
+# routes.py
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import AdminIndexView
 from app import db, admin
-from app.models import User
+from app.models import User, Post, Page
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField
+from wtforms import StringField, PasswordField, TextAreaField
 from wtforms.validators import DataRequired
+from flask_login import LoginManager
 
-# Blueprint for all routes
+
 bp = Blueprint('routes', __name__)
+login_manager = LoginManager()
 
-# -------------------------
-# Admin Panel Configuration
-# -------------------------
 
 class MyAdminIndexView(AdminIndexView):
     def is_accessible(self):
@@ -31,20 +29,31 @@ class UserAdmin(ModelView):
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('routes.login'))
 
-# Attach model to admin panel
-admin.add_view(UserAdmin(User, db.session))
+class PostAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin
 
-# -------------------------
-# Login Form
-# -------------------------
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('routes.login'))
+    form_overrides = {'content': TextAreaField}
+    form_args = {'content': {'class': 'quill-editor'}}
+
+class PageAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('routes.login'))
+    form_overrides = {'content': TextAreaField}
+    form_args = {'content': {'class': 'quill-editor'}}
+
+admin.add_view(UserAdmin(User, db.session))
+admin.add_view(PostAdmin(Post, db.session))
+admin.add_view(PageAdmin(Page, db.session))
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
-
-# -------------------------
-# Routes
-# -------------------------
 
 @bp.route('/')
 def index():
@@ -70,15 +79,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('routes.login'))
-
-# -------------------------
-# Flask-Login Setup
-# -------------------------
-
-from flask_login import LoginManager
-
-login_manager = LoginManager()
-login_manager.login_view = 'routes.login'
 
 @login_manager.user_loader
 def load_user(user_id):

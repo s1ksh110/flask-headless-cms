@@ -1,0 +1,32 @@
+<!-- admin/model/edit.html -->
+{% extends 'admin/model/edit.html' %}
+{% block tail %}
+    {{ super() }}
+    <!-- Quill CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <!-- Quill JS -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var editors = document.querySelectorAll('.quill-editor');
+            editors.forEach(function(editor) {
+                var quill = new Quill(editor, {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: [
+                            ['bold', 'italic', 'underline'],
+                            ['link', 'image'],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        ]
+                    }
+                });
+                quill.on('text-change', function() {
+                    editor.value = quill.root.innerHTML;
+                });
+            });
+        });
+    </script>
+    <style>
+        .quill-editor { height: 300px; }
+    </style>
+{% endblock %}
