@@ -143,4 +143,3 @@ def upload():
         return jsonify({'error': 'Invalid file type'}), 400
 
     return render_template('upload.html')
-
