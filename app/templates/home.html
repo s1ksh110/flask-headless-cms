@@ -1,0 +1,47 @@
+<!-- home.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - {{ username }}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-6">
+        <!-- Welcome Message -->
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Welcome, {{ username }}!</h1>
+        <p class="text-gray-600 mb-6">This is your personal blogging dashboard. Manage your content and explore your stats below.</p>
+
+        <!-- Statistics Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="bg-white p-4 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold text-blue-600">Posts</h2>
+                <p class="text-3xl font-bold text-gray-800">{{ post_count }}</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold text-green-600">Pages</h2>
+                <p class="text-3xl font-bold text-gray-800">{{ page_count }}</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold text-purple-600">Media</h2>
+                <p class="text-3xl font-bold text-gray-800">{{ media_count }}</p>
+            </div>
+        </div>
+
+        <!-- Widgets Section -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <a href="{{ url_for('routes.upload') }}" class="bg-blue-500 text-white p-3 rounded-lg text-center hover:bg-blue-600 transition">
+                    <span class="block text-lg">Upload Media</span>
+                </a>
+                <a href="{{ url_for('admin.index') }}" class="bg-gray-500 text-white p-3 rounded-lg text-center hover:bg-gray-600 transition">
+                    <span class="block text-lg">Go to Admin Panel</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

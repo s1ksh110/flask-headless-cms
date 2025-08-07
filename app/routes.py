@@ -1,5 +1,5 @@
 # routes.py
-from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app
+from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import AdminIndexView
@@ -85,19 +85,19 @@ def load_user(user_id):
 @bp.route('/')
 def index():
     if current_user.is_authenticated:
-        return redirect(url_for('admin.index'))
+        return redirect(url_for('routes.home'))
     return redirect(url_for('routes.login'))
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('admin.index'))
+        return redirect(url_for('routes.home'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and user.check_password(form.password.data):
             login_user(user)
-            return redirect(url_for('admin.index'))
+            return redirect(url_for('routes.home'))
         flash('Invalid username or password')
     return render_template('login.html', form=form)
 
@@ -107,9 +107,21 @@ def logout():
     logout_user()
     return redirect(url_for('routes.login'))
 
-# ---- File Upload ----
+@bp.route('/home')
+@login_required
+def home():
+    # Fetch counts for statistics
+    post_count = Post.query.count()
+    page_count = Page.query.count()
+    media_count = Media.query.count()
 
-from flask import jsonify  # import this at the top if not already
+    return render_template('home.html', 
+                          username=current_user.username,
+                          post_count=post_count,
+                          page_count=page_count,
+                          media_count=media_count)
+
+# ---- File Upload ----
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
