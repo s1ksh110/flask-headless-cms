@@ -159,7 +159,7 @@ The project is deployed on Render with a managed PostgreSQL database. Follow the
      ```
 
 5. **Access the Deployed App**:
-   - Available at your Render URL (e.g., `https://your-app.onrender.com`).
+   - Available at your Render URL (e.g., `sudo suspend web service flask-headless-cms`).
 
 ## Demo Data
 
